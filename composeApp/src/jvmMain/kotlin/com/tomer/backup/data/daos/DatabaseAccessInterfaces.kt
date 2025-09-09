@@ -3,25 +3,23 @@ package com.tomer.backup.data.daos
 import com.tomer.backup.data.BackupLog
 import com.tomer.backup.data.FileMetaData
 import com.tomer.backup.data.SourcePath
+import java.util.Optional
 
 interface SourcePathRepository {
-    fun saveSourcePath(sourcePath: SourcePath)
-    fun getSourcePathById(id: String): SourcePath?
-    fun updateSourcePath(sourcePath: SourcePath)
-    fun deleteSourcePath(id: String)
+    fun saveSourcePaths(sourcePaths: List<SourcePath>)
+    fun deleteAllSourcePaths()
     fun getAllSourcePaths(): List<SourcePath>
 }
 
 interface BackupLogRepository {
-    fun saveBackupLog(backupLog: BackupLog)
-    fun getBackupLogById(id: Int): BackupLog?
+    fun saveBackupLogs(backupLogs: List<BackupLog>)
+    fun getBackupLogById(id: Int): Optional<BackupLog>
     fun getAllBackupLogs(): List<BackupLog>
-    fun deleteBackupLog(id: Int)
 }
 
 interface FileMetaDataRepository {
     fun saveFileMetaData(fileMetaData: FileMetaData)
-    fun getFileMetaDataByPath(absolutePath: String): FileMetaData?
+    fun getFileMetaDataByPath(absolutePath: String): Optional<FileMetaData>
     fun updateFileMetaData(fileMetaData: FileMetaData)
     fun deleteFileMetaData(absolutePath: String)
 }
