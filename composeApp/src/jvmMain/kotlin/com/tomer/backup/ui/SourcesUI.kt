@@ -23,6 +23,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.toFontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.tomer.backup.data.SourcePath
+import com.tomer.backup.data.SourcePathTable
+import com.tomer.backup.data.daos.H2SourcePathRepository
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import sambabackup.composeapp.generated.resources.Res
@@ -31,6 +34,7 @@ import sambabackup.composeapp.generated.resources.folder
 import sambabackup.composeapp.generated.resources.font
 import java.awt.datatransfer.DataFlavor
 import java.io.File
+import java.time.LocalDate
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -39,6 +43,13 @@ fun SourcesScreen() {
     var isHovering by remember { mutableStateOf(false) }
     val listFiles = remember { mutableStateListOf<File>() }
     val listFolders = remember { mutableStateListOf<File>() }
+
+    LaunchedEffect(Unit) {
+        val map = H2SourcePathRepository.getAllSourcePaths().groupBy { sourcePath -> sourcePath.isFile }
+        listFiles.addAll(map.getOrDefault(true, emptyList()).map { i -> File(i.absolutePath) })
+        listFolders.addAll(map.getOrDefault(false, emptyList()).map { i -> File(i.absolutePath) })
+    }
+
     val target = remember {
         object : DragAndDropTarget {
             override fun onEntered(event: DragAndDropEvent) {
@@ -82,6 +93,15 @@ fun SourcesScreen() {
                 }
                 listFolders.sort()
                 listFiles.sort()
+                H2SourcePathRepository.deleteAllSourcePaths()
+                H2SourcePathRepository.saveSourcePaths(
+                    ArrayList<File>().apply {
+                        addAll(listFolders)
+                        addAll(listFiles)
+                    }.map {
+                        SourcePath(it.absolutePath, it.name, it.isFile, LocalDate.now())
+                    }
+                )
                 return true
             }
         }
