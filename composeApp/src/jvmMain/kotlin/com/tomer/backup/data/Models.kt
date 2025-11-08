@@ -18,7 +18,7 @@ data class BackupLog(
     val fileName: String,
     val absolutePath: String,
     val logType: LogType,   // Enum LogType: UPDATED, ADDED, DELETED
-    val id: Int = 0,        // Auto-generated ID
+    val id: Int = 0,       //  Auto-generated ID
     val timeLogged: LocalDateTime = LocalDateTime.now()
 )
 
@@ -26,5 +26,5 @@ data class FileMetaData(
     val absolutePath: String,
     val lastSize: Long,
     val lastModified: Long, // Represents file_last_modified_millis
-    val shaDigest: String  // Represents sha_digest (SHA-256 hash)
+    val shaDigest: String  //  Represents sha_digest (SHA-256 hash)
 )

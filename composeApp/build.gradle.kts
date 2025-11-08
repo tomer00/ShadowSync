@@ -46,3 +46,38 @@ compose.desktop {
         }
     }
 }
+
+
+val mainClass = "com.tomer.backup.MainKt" // The main class for your application
+
+tasks {
+    // Fat JAR creation task
+    register("fatJar", Jar::class.java) {
+        archiveClassifier.set("all")
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        manifest {
+            attributes(
+                "Main-Class" to mainClass
+            )
+        }
+
+        // Add runtimeClasspath dependencies, but exclude any manifest-related files
+        from(
+            configurations["jvmRuntimeClasspath"]
+                .map {
+                    if (it.isDirectory) it else zipTree(it).matching {
+                        exclude(
+                            "META-INF/*.SF",
+                            "META-INF/*.DSA",
+                            "META-INF/*.RSA",
+                        ) // Exclude conflicting manifest files from dependencies
+                    }
+                }) {
+            exclude("META-INF/MANIFEST.MF")
+        }
+
+        // Add compiled classes from the jvmMain source set
+        val jvmMain = sourceSets["jvmMain"]
+        from(jvmMain.output)
+    }
+}
