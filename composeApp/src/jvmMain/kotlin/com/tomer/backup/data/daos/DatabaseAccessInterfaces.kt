@@ -3,7 +3,7 @@ package com.tomer.backup.data.daos
 import com.tomer.backup.data.BackupLog
 import com.tomer.backup.data.FileMetaData
 import com.tomer.backup.data.SourcePath
-import java.util.Optional
+import java.util.*
 
 interface SourcePathRepository {
     fun saveSourcePaths(sourcePaths: List<SourcePath>)
@@ -20,6 +20,8 @@ interface BackupLogRepository {
 interface FileMetaDataRepository {
     fun saveFileMetaData(fileMetaData: FileMetaData)
     fun getFileMetaDataByPath(absolutePath: String): Optional<FileMetaData>
+    fun getAllFileMeta(): List<FileMetaData>
     fun updateFileMetaData(fileMetaData: FileMetaData)
     fun deleteFileMetaData(absolutePath: String)
+    fun deleteFileMetaDataOfDir(absolutePath: String)
 }
