@@ -1,12 +1,9 @@
 package com.tomer.backup.data.daos
 
-import com.tomer.backup.data.BackupLogTable
 import com.tomer.backup.data.SourcePath
 import com.tomer.backup.data.SourcePathTable
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.deleteAll
-import org.jetbrains.exposed.sql.deleteIgnoreWhere
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
