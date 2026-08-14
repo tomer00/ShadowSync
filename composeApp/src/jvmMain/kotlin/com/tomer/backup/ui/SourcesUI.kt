@@ -1,8 +1,6 @@
 package com.tomer.backup.ui
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.*
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
@@ -23,8 +21,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.toFontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.application
 import com.tomer.backup.data.SourcePath
-import com.tomer.backup.data.SourcePathTable
 import com.tomer.backup.data.daos.H2SourcePathRepository
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
@@ -35,6 +34,7 @@ import sambabackup.composeapp.generated.resources.font
 import java.awt.datatransfer.DataFlavor
 import java.io.File
 import java.time.LocalDate
+import kotlin.concurrent.thread
 
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -102,6 +102,21 @@ fun SourcesScreen() {
                         SourcePath(it.absolutePath, it.name, it.isFile, LocalDate.now())
                     }
                 )
+                val foldersWithoutBackupIgnore = mutableListOf<File>()
+                listFolders.forEach {
+                    val backupFile = File(it, ".backupignore")
+                    if (!backupFile.exists())
+                        foldersWithoutBackupIgnore.add(it)
+                }
+                if (foldersWithoutBackupIgnore.isNotEmpty()) {
+                    thread(isDaemon = true) {
+                        application(exitProcessOnExit = false) {
+                            Window(onCloseRequest = ::exitApplication, title = "ShadowSync") {
+                                AddBackupToolUI(foldersWithoutBackupIgnore)
+                            }
+                        }
+                    }
+                }
                 return true
             }
         }
@@ -113,7 +128,10 @@ fun SourcesScreen() {
             )
     ) {
         //region Main Flow layout
-        FlowRow(Modifier.fillMaxSize()) {
+        FlowRow(
+            Modifier.fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
             listFolders.forEach {
                 FileItem(it)
             }
